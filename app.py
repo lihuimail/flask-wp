@@ -11,7 +11,7 @@ config = {
         'debug': True
     },
     'cms': {
-        'base': "http://cms.ridgestreet.se:3000/api"
+        'base': "http://wp.atyourfancystartup.io/api"
     }
 }
 
