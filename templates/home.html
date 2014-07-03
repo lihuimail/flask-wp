@@ -3,6 +3,14 @@
 
         {{ page.content|safe }}
 
+
+        <h2>Latest blog posts</h2>
+        <ul>
+    {% for post in posts %}
+        <li><a href="/blog/{{ post.slug }}">{{ post.title }}</a></li>
+    {% endfor %}
+            </ul>
+
         <h2>Other pages</h2>
         <ul>
     {% for page in pages %}
