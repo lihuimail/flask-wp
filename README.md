@@ -11,5 +11,15 @@ $ source env/bin/activate
 $ pip install -U -r requirements.txt
 $ python app.py
 ```
+
+Open up app.py and edit the path to your WP JSON API:
+
+```
+  'cms': {
+    'base': "http://cms.yourwpinstall.com/api"
+  }
+```
+
+
 Then go to [0.0.0.0:3001](http://0.0.0.0:3001)
 
