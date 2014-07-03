@@ -36,7 +36,6 @@ def get_page(slug):
         abort(404)
     return render_template('page.html', page = page)
 
-
 @app.route("/blog/<slug>")
 def get_blog_post(slug):
     post = wordpress.get_post(slug)
