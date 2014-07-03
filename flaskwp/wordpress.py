@@ -26,6 +26,21 @@ class WordpressAPI(object):
         self.api_root = api_root
 
     def add_custom_attributes_to_response(self, response):
+        """
+        TODO: Convert to Python from PHP:
+
+        if (array_key_exists('custom_fields', $this->page) && is_array($this->page['custom_fields'])) {
+                $this->custom_fields = $this->page['custom_fields'];
+
+                foreach ($this->custom_attributes as $custom_attribute) {
+                    if ($this->hasCustomAttribute($custom_attribute)) {
+                        $keyName = str_replace('_yoast_wpseo_', '', $custom_attribute);
+                        $this->page[$keyName] = $this->custom_fields[$custom_attribute][0];
+                    }
+                }
+            }
+
+        """
         return response
 
     def get_response(self, url, success_key):
@@ -36,14 +51,14 @@ class WordpressAPI(object):
                 return self.add_custom_attributes_to_response(json_response[success_key])
         return False
 
-    def get_recent_posts(self, count = 30, page = 1):
-        return self.get_response("%s/get_recent_posts/?count=%s&page=%s" % (self.api_root, count, page), 'posts')
+    def get_recent_posts(self, count = 30, page = 1, post_type = 'post'):
+        return self.get_response("%s/get_recent_posts/?count=%s&page=%s&post_type=%s" % (self.api_root, count, page, post_type), 'posts')
 
     def get_posts(self, count = 30, page = 1, post_type = 'post'):
         return self.get_response("%s/get_posts/?post_type=%s&count=%s&page=%s" % (self.api_root, post_type, count, page), 'posts')
 
-    def get_pages(self):
-        return self.get_response("%s/get_page_index/" % self.api_root, 'pages')
+    def get_pages(self, post_type = 'page'):
+        return self.get_response("%s/get_page_index/?post_type=%s" % (self.api_root, post_type), 'pages')
 
     def get_page(self, slug, post_type = "page"):
         api_call = "%s/get_page/?slug=%s&custom_fields=%s&post_type=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes']), post_type)
