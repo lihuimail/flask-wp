@@ -1,0 +1,5 @@
+{% extends "layout.html" %}
+{% block title %}{{ page.title_plain }}{% endblock %}
+{% block body %}
+    {{ page.content|safe }}
+{% endblock %}
