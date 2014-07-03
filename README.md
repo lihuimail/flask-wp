@@ -9,7 +9,20 @@ $ cd flask-wp
 $ virtualenv env
 $ source env/bin/activate
 $ pip install -U -r requirements.txt
+```
+
+Open up app.py and edit the path to your WP JSON API:
+
+```
+  'cms': {
+    'base': "http://cms.yourwpinstall.com/api"
+  }
+```
+
+```
 $ python app.py
 ```
+
+
 Then go to [0.0.0.0:3001](http://0.0.0.0:3001)
 
