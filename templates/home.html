@@ -1,4 +1,12 @@
 {% extends "layout.html" %}
 {% block body %}
-HOME
+
+        {{ page.content|safe }}
+
+        <h2>Other pages</h2>
+        <ul>
+    {% for page in pages %}
+        <li><a href="/{{ page.slug }}">{{ page.title }}</a></li>
+    {% endfor %}
+            </ul>
 {% endblock %}

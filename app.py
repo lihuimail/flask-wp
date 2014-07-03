@@ -16,18 +16,16 @@ config = {
 
 wordpress = WordpressAPI(api_root = config['cms']['base'])
 
-
 @app.route("/")
 def home():
-    return "home"
+    pages = wordpress.get_pages()
+    page = wordpress.get_page('home')
+    return render_template('home.html', pages = pages, page = page)
 
 @app.route("/<slug>")
 def get_page(slug):
-    context = {
-        'page': wordpress.get_page(slug)
-    }
-
-    return render_template('page.html', **context)
+    page = wordpress.get_page(slug)
+    return render_template('page.html', page = page)
 
 if __name__ == "__main__":
     app.run(**config['server'])
