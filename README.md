@@ -9,7 +9,6 @@ $ cd flask-wp
 $ virtualenv env
 $ source env/bin/activate
 $ pip install -U -r requirements.txt
-$ python app.py
 ```
 
 Open up app.py and edit the path to your WP JSON API:
@@ -18,6 +17,10 @@ Open up app.py and edit the path to your WP JSON API:
   'cms': {
     'base': "http://cms.yourwpinstall.com/api"
   }
+```
+
+```
+$ python app.py
 ```
 
 
