@@ -27,39 +27,22 @@ class WordpressAPI(object):
     def __init__(self, api_root):
         self.api_root = api_root
 
-    def get_recent_posts(self):
-        api_call = "%s/get_recent_posts/" % self.api_root
-        response = requests.get(api_call)
+    def get_response(self, url, success_key):
+        response = requests.get(url)
         if response.status_code == 200:
             json_response = json.loads(response.text)
             if (json_response['status'] == 'ok'):
-                return json_response['posts']
-        return []
+                return json_response[success_key]
+        return False
+
+    def get_recent_posts(self):
+        return self.get_response("%s/get_recent_posts/" % self.api_root, 'posts')
 
     def get_pages(self):
-        api_call = "%s/get_page_index/" % self.api_root
-        response = requests.get(api_call)
-        if response.status_code == 200:
-            json_response = json.loads(response.text)
-            if (json_response['status'] == 'ok'):
-                return json_response['pages']
-        return []
+        return self.get_response("%s/get_page_index/" % self.api_root, 'pages')
 
     def get_page(self, slug):
-        api_call = "%s/get_page/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes']))
-        response = requests.get(api_call)
-        if response.status_code == 200:
-            json_response = json.loads(response.text)
-            if (json_response['status'] == 'ok'):
-                return json_response['page']
-        return False
-
+        return self.get_response("%s/get_page/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes'])), 'page')
 
     def get_post(self, slug):
-        api_call = "%s/get_post/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes']))
-        response = requests.get(api_call)
-        if response.status_code == 200:
-            json_response = json.loads(response.text)
-            if (json_response['status'] == 'ok'):
-                return json_response['post']
-        return False
+        return self.get_response("%s/get_post/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes'])), 'post')
