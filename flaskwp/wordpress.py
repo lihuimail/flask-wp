@@ -19,8 +19,7 @@ class WordpressAPI(object):
                 '_yoast_wpseo_sitemap-prio',
                 '_yoast_wpseo_sitemap-include',
                 '_yoast_wpseo_meta-robots-adv',
-                '_yoast_wpseo_authorship',
-                '_tieroom'
+                '_yoast_wpseo_authorship'
         ]
     }
 
