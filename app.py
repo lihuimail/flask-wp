@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flaskwp.wordpress import WordpressAPI
+from werkzeug.exceptions import abort
 
 app = Flask(__name__)
 
@@ -31,13 +32,21 @@ def home():
 @app.route("/<slug>")
 def get_page(slug):
     page = wordpress.get_page(slug)
+    if not page:
+        abort(404)
     return render_template('page.html', page = page)
 
 
 @app.route("/blog/<slug>")
 def get_blog_post(slug):
-    page = wordpress.get_post(slug)
+    post = wordpress.get_post(slug)
+    if not post:
+        abort(404)
     return render_template('post.html', post = post)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == "__main__":
     app.run(**config['server'])
