@@ -42,7 +42,9 @@ class WordpressAPI(object):
         return self.get_response("%s/get_page_index/" % self.api_root, 'pages')
 
     def get_page(self, slug):
-        return self.get_response("%s/get_page/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes'])), 'page')
+        api_call = "%s/get_page/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes']))
+        return self.get_response(api_call, 'page')
 
     def get_post(self, slug):
-        return self.get_response("%s/get_post/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes'])), 'post')
+        api_call = "%s/get_post/?slug=%s&custom_fields=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes']))
+        return self.get_response(api_call, 'post')
