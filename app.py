@@ -11,7 +11,7 @@ config = {
         'debug': True
     },
     'cms': {
-        'base': "http://cms.tieroom.dev/api"
+        'base': "http://cms.ridgestreet.se:3000/api"
     }
 }
 
@@ -40,6 +40,20 @@ def get_page(slug):
 @app.route("/blog/<slug>")
 def get_blog_post(slug):
     post = wordpress.get_post(slug)
+    if not post:
+        abort(404)
+    return render_template('post.html', post = post)
+
+@app.route("/case")
+def get_cases():
+    cases = wordpress.get_posts(post_type='case')
+    if not cases:
+        abort(404)
+    return render_template('posts.html', posts = cases, post_type = 'case')
+
+@app.route("/<post_type>/<slug>")
+def get_custom_post(post_type, slug):
+    post = wordpress.get_post(slug, post_type)
     if not post:
         abort(404)
     return render_template('post.html', post = post)
