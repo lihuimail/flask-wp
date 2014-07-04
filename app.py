@@ -11,7 +11,7 @@ config = {
         'debug': True
     },
     'cms': {
-        'base': "http://wp.atyourfancystartup.io/api"
+        'base': "http://cms.ridgestreet.se:3000/api"
     }
 }
 
@@ -36,12 +36,29 @@ def get_page(slug):
         abort(404)
     return render_template('page.html', page = page)
 
+@app.route("/category/<category>")
+def get_category(category):
+    posts = wordpress.get_category_posts(category)
+    return render_template('posts.html', posts = posts)
+
+@app.route("/tag/<tag>")
+def get_tag(tag):
+    posts = wordpress.get_tag_posts(tag)
+    return render_template('posts.html', posts = posts)
+
 @app.route("/blog/<slug>")
 def get_blog_post(slug):
     post = wordpress.get_post(slug)
     if not post:
         abort(404)
     return render_template('post.html', post = post)
+
+@app.route("/author/<slug>")
+def get_author(slug):
+    posts = wordpress.get_author_posts(slug)
+    if not posts:
+        abort(404)
+    return render_template('posts.html', posts = posts)
 
 @app.route("/case")
 def get_cases():

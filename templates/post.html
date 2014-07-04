@@ -2,5 +2,26 @@
 {% block title %}{{ post.title_plain }}{% endblock %}
 {% block body %}
         <h1>{{ post.title }}</h1>
+
+    <ul class="categories list-inline">
+    <li><strong>Categories</strong></li>
+    {% for category in post.categories %}
+    <li><a href="{{ url_for('get_category', category = category.slug) }}">{{ category.title }}</a></li>
+    {% endfor %}
+    </ul>
+
+
+        <p class="author"><strong>Author</strong> <a href="{{ url_for('get_author', slug = post.author.slug) }}">{{ post.author.name }}</a></p>
+
+    <article>
         {{ post.content|safe }}
+    </article>
+
+<ul class="tags list-inline">
+    <li><strong>Tags</strong></li>
+    {% for tag in post.tags %}
+    <li><a href="{{ url_for('get_tag', tag = tag.slug) }}">{{ tag.title }}</a></li>
+    {% endfor %}
+    </ul>
+
 {% endblock %}

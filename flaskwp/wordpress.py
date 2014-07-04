@@ -69,13 +69,16 @@ class WordpressAPI(object):
         return self.get_response(api_call, 'post')
 
     def get_category_posts(self, category_slug, count = 30, page = 1, post_type = 'post'):
-        return []
+        api_call = "%s/get_category_posts/?slug=%s&post_type=%s&count=%s&page=%s" % (self.api_root, category_slug, post_type, count, page)
+        return self.get_response(api_call, 'posts')
 
     def get_tag_posts(self, tag_slug, count = 30, page = 1, post_type = 'post'):
-        return []
+        api_call = "%s/get_tag_posts/?slug=%s&post_type=%s&count=%s&page=%s" % (self.api_root, tag_slug, post_type, count, page)
+        return self.get_response(api_call, 'posts')
 
     def get_author_posts(self, author_slug, count = 30, page = 1, post_type = 'post'):
-        return []
+        api_call = "%s/get_author_posts/?slug=%s&post_type=%s&count=%s&page=%s" % (self.api_root, author_slug, post_type, count, page)
+        return self.get_response(api_call, 'posts')
 
     def get_search_results(self, query, count = 30, page = 1, post_type='post'):
         return []
