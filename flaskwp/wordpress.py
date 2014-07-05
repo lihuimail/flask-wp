@@ -1,4 +1,5 @@
 import json, requests
+import urllib
 
 class WordpressAPI(object):
 
@@ -43,7 +44,9 @@ class WordpressAPI(object):
         """
         return response
 
-    def get_response(self, url, success_key):
+    def get_response(self, url, success_key, params = {}):
+        #TODO: create URL here instead
+        querystring = urllib.urlencode(params)
         response = requests.get(url)
         if response.status_code == 200:
             json_response = json.loads(response.text)
