@@ -20,13 +20,13 @@ wordpress = WordpressAPI(api_root = config['cms']['base'])
 @app.route("/")
 def home():
     posts = wordpress.get_recent_posts()
-    pages = wordpress.get_pages()
+    pages = wordpress.get_page_index()
     page = wordpress.get_page('home')
     return render_template(
         'home.html',
-        pages = pages,
-        page = page,
-        posts = posts
+        pages = pages['pages'],
+        page = page['page'],
+        posts = posts['posts']
     )
 
 @app.route("/<slug>")
@@ -34,7 +34,7 @@ def get_page(slug):
     page = wordpress.get_page(slug)
     if not page:
         abort(404)
-    return render_template('page.html', page = page)
+    return render_template('page.html', page = page['page'])
 
 
 @app.route("/search")
@@ -43,7 +43,7 @@ def get_search_results():
     posts = wordpress.get_search_results(query)
     if not posts:
         abort(404)
-    return render_template('posts.html', posts = posts, q = query)
+    return render_template('posts.html', posts = posts['posts'], q = query)
 
 @app.route("/comment", methods=['POST'])
 def post_comment():
@@ -62,40 +62,40 @@ def post_comment():
 @app.route("/category/<category>")
 def get_category(category):
     posts = wordpress.get_category_posts(category)
-    return render_template('posts.html', posts = posts)
+    return render_template('posts.html', posts = posts['posts'])
 
 @app.route("/tag/<tag>")
 def get_tag(tag):
     posts = wordpress.get_tag_posts(tag)
-    return render_template('posts.html', posts = posts)
+    return render_template('posts.html', posts = posts['posts'])
 
 @app.route("/blog/<slug>")
 def get_blog_post(slug):
     post = wordpress.get_post(slug)
     if not post:
         abort(404)
-    return render_template('post.html', post = post)
+    return render_template('post.html', post = post['post'])
 
 @app.route("/author/<slug>")
 def get_author(slug):
     posts = wordpress.get_author_posts(slug)
     if not posts:
         abort(404)
-    return render_template('posts.html', posts = posts)
+    return render_template('posts.html', posts = posts['posts'])
 
 @app.route("/case")
 def get_cases():
     cases = wordpress.get_posts(post_type='case')
     if not cases:
         abort(404)
-    return render_template('posts.html', posts = cases, post_type = 'case')
+    return render_template('posts.html', posts = cases['posts'], post_type = 'case')
 
 @app.route("/<post_type>/<slug>")
 def get_custom_post(post_type, slug):
     post = wordpress.get_post(slug, post_type)
     if not post:
         abort(404)
-    return render_template('post.html', post = post)
+    return render_template('post.html', post = post['post'])
 
 @app.errorhandler(404)
 def page_not_found(e):

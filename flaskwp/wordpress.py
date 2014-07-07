@@ -44,18 +44,21 @@ class WordpressAPI(object):
         """
         return response
 
-    def get_response(self, endpoint, params = {}, success_key = 'posts', method = 'GET'):
-        #TODO: create URL here instead
-        querystring = urllib.urlencode(params)
-        url = "%s/%s/?%s" % (self.api_root, endpoint, querystring)
-        response = requests.get(url)
+    def get_response(self, endpoint, params = {}, method = 'GET', data = {}):
+
+        url = "%s/%s/?%s" % (self.api_root, endpoint, urllib.urlencode(params))
+
+        if method.upper() == 'GET':
+            response = requests.get(url)
+        elif method.upper() == 'POST':
+            response = requests.post(url, data=data)
+
         if response.status_code == 200:
             json_response = json.loads(response.text)
             if (json_response['status'] == 'ok'):
-                return self.add_custom_attributes_to_response(json_response[success_key])
+                return self.add_custom_attributes_to_response(json_response)
+
         return False
-
-
 
     def get_recent_posts(self, count = 30, page = 1, post_type = 'post'):
         params = {
@@ -65,7 +68,6 @@ class WordpressAPI(object):
         }
         return self.get_response('get_recent_posts', params)
 
-
     def get_posts(self, count = 30, page = 1, post_type = 'post'):
         params = {
             'count': count,
@@ -74,13 +76,37 @@ class WordpressAPI(object):
         }
         return self.get_response('get_posts', params)
 
-    def get_pages(self, count = 30, page = 1, post_type = 'page'):
+    def get_date_posts(self, date, count=30, page=1, post_type='post'):
+        params = {
+            'date': date,
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_date_posts', params)
+
+    def get_page_index(self, count = 30, page = 1, post_type = 'page'):
         params = {
             'count': count,
             'page': page,
             'post_type': post_type
         }
-        return self.get_response('get_page_index', params, success_key='pages')
+        return self.get_response('get_page_index', params)
+
+    def get_date_index(self):
+        return self.get_response('get_date_index')
+
+    def get_category_index(self, parent=-1):
+        params = {}
+        if parent > 0:
+            params['parent'] = parent
+        return self.get_response('get_category_index', params=params)
+
+    def get_tag_index(self):
+        return self.get_response('get_tag_index')
+
+    def get_author_index(self):
+        return self.get_response('get_author_index')
 
     def get_page(self, slug, post_type = "page"):
         params = {
@@ -88,7 +114,7 @@ class WordpressAPI(object):
             'custom_fields': ",".join(self.defaults['custom_attributes']),
             'post_type': post_type
         }
-        return self.get_response('get_page', params, success_key='page')
+        return self.get_response('get_page', params)
 
     def get_post(self, slug = "", post_type = "post", post_id = -1):
 
@@ -103,7 +129,7 @@ class WordpressAPI(object):
         if post_id > -1:
             params['id'] = post_id
 
-        return self.get_response('get_post', params, success_key='post')
+        return self.get_response('get_post', params)
 
     def get_category_posts(self, category_slug, count = 30, page = 1, post_type = 'post'):
         params = {
@@ -143,31 +169,51 @@ class WordpressAPI(object):
 
 
     def get_nonce(self, controller, method):
-        return {}
+        params = {
+            'controller': controller,
+            'method': method
+        }
+        return self.get_response('get_nonce', params)
 
-    def create_post(self, post, nonce):
-        return {}
+    def create_post(self, post):
+        nonce = self.get_nonce(controller='posts', method='create_post')
+        post['nonce'] = nonce['nonce']
+        return self.get_response('posts/create_post', method='POST', data=post)
 
-    def update_post(self, slug, post, nonce):
-        return {}
-
-    def delete_post(self, slug, nonce):
-        return {}
-
-    def submit_comment(self, post_id, name, email, content, url = ""):
-
+    def update_post(self, slug, post):
+        nonce = self.get_nonce(controller='posts', method='update_post')
+        post['nonce'] = nonce['nonce']
 
         params = {
+            'slug': slug
+        }
+
+        return self.get_response('posts/update_post', method='POST', params=params, data=post)
+
+
+    def delete_post(self, slug):
+        nonce = self.get_nonce(controller='posts', method='delete_post')
+
+        params = {
+            'slug': slug
+        }
+
+        data = {
+            'nonce': nonce['nonce']
+        }
+
+        return self.get_response('posts/delete_post', method='POST', params=params, data=data)
+
+    def submit_comment(self, post_id, name, email, content, url = ""):
+        data = {
             'name': name,
             'email': email,
             'content': content,
             'url': url
         }
 
-        api_call = "%s/respond/submit_comment/?post_id=%s" % (self.api_root, post_id)
-        response = requests.post(api_call, data=params)
-        if response.status_code == 200:
-            json_response = json.loads(response.text)
-            print json_response
-            return json_response
-        return False
+        params = {
+            'post_id': post_id
+        }
+
+        return self.get_response('respond/submit_comment', params=params, method='POST', data=data)
