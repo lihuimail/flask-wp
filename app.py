@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for, redirect
 from flaskwp.wordpress import WordpressAPI
 from werkzeug.exceptions import abort
 
@@ -44,6 +44,20 @@ def get_search_results():
     if not posts:
         abort(404)
     return render_template('posts.html', posts = posts, q = query)
+
+@app.route("/comment", methods=['POST'])
+def post_comment():
+    email = request.form.get("email")
+    url = request.form.get("url")
+    name = request.form.get("name")
+    comment = request.form.get("comment")
+    post_id = request.form.get("post")
+
+    wordpress.submit_comment(post_id, name, email, comment, url)
+
+    post = wordpress.get_post(post_id = post_id)
+
+    return redirect(url_for('get_custom_post', post_type = 'blog', slug = post['slug']))
 
 @app.route("/category/<category>")
 def get_category(category):

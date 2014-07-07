@@ -44,7 +44,7 @@ class WordpressAPI(object):
         """
         return response
 
-    def get_response(self, endpoint, params = {}, success_key = 'posts'):
+    def get_response(self, endpoint, params = {}, success_key = 'posts', method = 'GET'):
         #TODO: create URL here instead
         querystring = urllib.urlencode(params)
         url = "%s/%s/?%s" % (self.api_root, endpoint, querystring)
@@ -54,6 +54,8 @@ class WordpressAPI(object):
             if (json_response['status'] == 'ok'):
                 return self.add_custom_attributes_to_response(json_response[success_key])
         return False
+
+
 
     def get_recent_posts(self, count = 30, page = 1, post_type = 'post'):
         params = {
@@ -88,12 +90,19 @@ class WordpressAPI(object):
         }
         return self.get_response('get_page', params, success_key='page')
 
-    def get_post(self, slug, post_type = "post"):
+    def get_post(self, slug = "", post_type = "post", post_id = -1):
+
         params = {
-            'slug': slug,
             'custom_fields': ",".join(self.defaults['custom_attributes']),
             'post_type': post_type
         }
+
+        if slug != "":
+            params['slug'] = slug
+
+        if post_id > -1:
+            params['id'] = post_id
+
         return self.get_response('get_post', params, success_key='post')
 
     def get_category_posts(self, category_slug, count = 30, page = 1, post_type = 'post'):
@@ -145,13 +154,20 @@ class WordpressAPI(object):
     def delete_post(self, slug, nonce):
         return {}
 
-    def submit_comment(self, post_id, name, email, content):
-        """
-        Optional arguments
-            redirect - redirect instead of returning a JSON object
-            redirect_ok - redirect to a specific URL when the status value is ok
-            redirect_error - redirect to a specific URL when the status value is error
-            redirect_pending - redirect to a specific URL when the status value is pending
+    def submit_comment(self, post_id, name, email, content, url = ""):
 
-        """
-        return {}
+
+        params = {
+            'name': name,
+            'email': email,
+            'content': content,
+            'url': url
+        }
+
+        api_call = "%s/respond/submit_comment/?post_id=%s" % (self.api_root, post_id)
+        response = requests.post(api_call, data=params)
+        if response.status_code == 200:
+            json_response = json.loads(response.text)
+            print json_response
+            return json_response
+        return False
