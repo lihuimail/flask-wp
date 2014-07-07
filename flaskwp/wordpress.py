@@ -44,9 +44,10 @@ class WordpressAPI(object):
         """
         return response
 
-    def get_response(self, url, success_key, params = {}):
+    def get_response(self, endpoint, params = {}, success_key = 'posts'):
         #TODO: create URL here instead
         querystring = urllib.urlencode(params)
+        url = "%s/%s/?%s" % (self.api_root, endpoint, querystring)
         response = requests.get(url)
         if response.status_code == 200:
             json_response = json.loads(response.text)
@@ -55,36 +56,82 @@ class WordpressAPI(object):
         return False
 
     def get_recent_posts(self, count = 30, page = 1, post_type = 'post'):
-        return self.get_response("%s/get_recent_posts/?count=%s&page=%s&post_type=%s" % (self.api_root, count, page, post_type), 'posts')
+        params = {
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_recent_posts', params)
+
 
     def get_posts(self, count = 30, page = 1, post_type = 'post'):
-        return self.get_response("%s/get_posts/?post_type=%s&count=%s&page=%s" % (self.api_root, post_type, count, page), 'posts')
+        params = {
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_posts', params)
 
-    def get_pages(self, post_type = 'page'):
-        return self.get_response("%s/get_page_index/?post_type=%s" % (self.api_root, post_type), 'pages')
+    def get_pages(self, count = 30, page = 1, post_type = 'page'):
+        params = {
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_page_index', params, success_key='pages')
 
     def get_page(self, slug, post_type = "page"):
-        api_call = "%s/get_page/?slug=%s&custom_fields=%s&post_type=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes']), post_type)
-        return self.get_response(api_call, 'page')
+        params = {
+            'slug': slug,
+            'custom_fields': ",".join(self.defaults['custom_attributes']),
+            'post_type': post_type
+        }
+        return self.get_response('get_page', params, success_key='page')
 
     def get_post(self, slug, post_type = "post"):
-        api_call = "%s/get_post/?slug=%s&custom_fields=%s&post_type=%s" % (self.api_root, slug, ",".join(self.defaults['custom_attributes']), post_type)
-        return self.get_response(api_call, 'post')
+        params = {
+            'slug': slug,
+            'custom_fields': ",".join(self.defaults['custom_attributes']),
+            'post_type': post_type
+        }
+        return self.get_response('get_post', params, success_key='post')
 
     def get_category_posts(self, category_slug, count = 30, page = 1, post_type = 'post'):
-        api_call = "%s/get_category_posts/?slug=%s&post_type=%s&count=%s&page=%s" % (self.api_root, category_slug, post_type, count, page)
-        return self.get_response(api_call, 'posts')
+        params = {
+            'slug': category_slug,
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_category_posts', params)
 
     def get_tag_posts(self, tag_slug, count = 30, page = 1, post_type = 'post'):
-        api_call = "%s/get_tag_posts/?slug=%s&post_type=%s&count=%s&page=%s" % (self.api_root, tag_slug, post_type, count, page)
-        return self.get_response(api_call, 'posts')
+        params = {
+            'slug': tag_slug,
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_tag_posts', params)
 
     def get_author_posts(self, author_slug, count = 30, page = 1, post_type = 'post'):
-        api_call = "%s/get_author_posts/?slug=%s&post_type=%s&count=%s&page=%s" % (self.api_root, author_slug, post_type, count, page)
-        return self.get_response(api_call, 'posts')
+        params = {
+            'slug': author_slug,
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_author_posts', params)
 
     def get_search_results(self, query, count = 30, page = 1, post_type='post'):
-        return []
+        params = {
+            'search': query,
+            'count': count,
+            'page': page,
+            'post_type': post_type
+        }
+        return self.get_response('get_search_results', params)
+
 
     def get_nonce(self, controller, method):
         return {}

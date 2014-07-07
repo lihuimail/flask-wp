@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flaskwp.wordpress import WordpressAPI
 from werkzeug.exceptions import abort
 
@@ -35,6 +35,15 @@ def get_page(slug):
     if not page:
         abort(404)
     return render_template('page.html', page = page)
+
+
+@app.route("/search")
+def get_search_results():
+    query = request.args.get("q")
+    posts = wordpress.get_search_results(query)
+    if not posts:
+        abort(404)
+    return render_template('posts.html', posts = posts, q = query)
 
 @app.route("/category/<category>")
 def get_category(category):
